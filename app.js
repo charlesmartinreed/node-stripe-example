@@ -23,6 +23,26 @@ app.get('/', (req, res) => {
 	res.render('index');
 });
 
+// CHARGE ROUTE
+app.post('/charge', (req, res) => {
+	const amount = 2500;
+	// create customer, charge the customer
+	// form sends object with stripeToken, stripeTokenType and stripeEmail
+	stripe.customers.create({
+		email: req.body.stripeEmail,
+		source: req.body.stripeToken
+	})
+		.then(customer => {
+			stripe.charges.create({
+				amount,
+				description: 'Web Development eBook',
+				currency: 'usd',
+				customer: customer.id
+			})
+		})
+		.then(charge => res.render('success'));
+})
+
 app.listen(port, () => {
 	console.log(`Server started on port ${port}`);
 })
